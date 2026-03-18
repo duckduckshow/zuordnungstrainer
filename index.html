@@ -108,7 +108,6 @@
     }
 
     .choice:hover { border-color: var(--primary); }
-    .choice.selected { border-color: var(--primary); background: var(--primary-soft); }
     .choice.correct { border-color: var(--good); background: var(--good-soft); color: var(--good); }
     .choice.wrong { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
 
@@ -138,21 +137,11 @@
       vertical-align: middle;
     }
 
-    th {
-      background: #e5eefc;
-    }
+    th { background: #e5eefc; }
 
     .small {
       font-size: 14px;
       color: var(--muted);
-    }
-
-    .arrow {
-      font-size: 20px;
-      color: var(--accent);
-      font-weight: bold;
-      display: inline-block;
-      margin: 0 8px;
     }
 
     .input {
@@ -161,10 +150,11 @@
       font-size: 16px;
       border-radius: 10px;
       border: 1px solid #9ca3af;
+      background: white;
     }
 
     .input.small-input {
-      max-width: 120px;
+      max-width: 130px;
       text-align: center;
       margin: 0 auto;
     }
@@ -290,7 +280,7 @@
         <h3>So arbeitest du</h3>
         <p><strong>1.</strong> Lies die Angabe.</p>
         <p><strong>2.</strong> Kreuze an: direkt oder indirekt.</p>
-        <p><strong>3.</strong> Fülle die vorgegebene Tabelle aus.</p>
+        <p><strong>3.</strong> Fülle alle freien Felder aus.</p>
         <p><strong>4.</strong> Löse mit der passenden Methode.</p>
 
         <div class="step">
@@ -311,94 +301,334 @@
   </div>
 
   <script>
-    const tasks = [
-      {
-        title: "Arbeitskräfte und Arbeitszeit",
-        text: "6 Arbeitskräfte brauchen 2 Stunden. Wie lange brauchen 4 Arbeitskräfte?",
-        relation: "indirekt",
-        method: "tabelle",
-        leftLabel: "Anzahl der Arbeitskräfte",
-        rightLabel: "Arbeitszeit in h",
-        givenA: 6,
-        givenB: 2,
-        targetA: 4,
-        answer: 3,
-        unit: "h",
-        arrows: ["| ·4", "| :6"]
-      },
-      {
-        title: "Ölvorrat",
-        text: "6 l reichen für 70 Tage. Wie viele Tage reichen 5 l?",
-        relation: "indirekt",
-        method: "gleichung",
-        leftLabel: "Verbrauch in l",
-        rightLabel: "Zeit in d",
-        givenA: 6,
-        givenB: 70,
-        targetA: 5,
-        answer: 84,
-        unit: "d"
-      },
-      {
-        title: "Preis und Anzahl",
-        text: "3 Hefte kosten 6 €. Wie viel kosten 8 Hefte?",
-        relation: "direkt",
-        method: "tabelle",
-        leftLabel: "Anzahl der Hefte",
-        rightLabel: "Preis in €",
-        givenA: 3,
-        givenB: 6,
-        targetA: 8,
-        answer: 16,
-        unit: "€",
-        arrows: ["| :3", "| ·8"]
-      },
-      {
-        title: "Strecke und Zeit",
-        text: "Für 120 km braucht ein Zug 2 Stunden. Wie weit fährt er in 5 Stunden?",
-        relation: "direkt",
-        method: "gleichung",
-        leftLabel: "Strecke in km",
-        rightLabel: "Zeit in h",
-        givenA: 120,
-        givenB: 2,
-        targetA: 5,
-        answer: 300,
-        unit: "km"
-      },
-      {
-        title: "Maschinen und Tage",
-        text: "8 Maschinen brauchen für einen Auftrag 15 Tage. Wie viele Tage brauchen 10 Maschinen?",
-        relation: "indirekt",
-        method: "tabelle",
-        leftLabel: "Anzahl der Maschinen",
-        rightLabel: "Zeit in d",
-        givenA: 8,
-        givenB: 15,
-        targetA: 10,
-        answer: 12,
-        unit: "d",
-        arrows: ["| ·10", "| :8"]
-      },
-      {
-        title: "Menge und Preis",
-        text: "5 kg Äpfel kosten 15 €. Wie viel kosten 9 kg?",
-        relation: "direkt",
-        method: "gleichung",
-        leftLabel: "Menge in kg",
-        rightLabel: "Preis in €",
-        givenA: 5,
-        givenB: 15,
-        targetA: 9,
-        answer: 27,
-        unit: "€"
-      }
-    ];
+    const tasks = {
+      direktTabelle: [
+        {
+          title: "Preis und Anzahl",
+          text: "3 Hefte kosten 6 €. Wie viel kosten 8 Hefte?",
+          relation: "direkt",
+          method: "tabelle",
+          leftLabel: "Anzahl der Hefte",
+          rightLabel: "Preis in €",
+          givenA: 3,
+          givenB: 6,
+          targetA: 8,
+          answer: 16,
+          unit: "€"
+        },
+        {
+          title: "Kilogramm und Preis",
+          text: "4 kg Birnen kosten 12 €. Wie viel kosten 7 kg?",
+          relation: "direkt",
+          method: "tabelle",
+          leftLabel: "Menge in kg",
+          rightLabel: "Preis in €",
+          givenA: 4,
+          givenB: 12,
+          targetA: 7,
+          answer: 21,
+          unit: "€"
+        },
+        {
+          title: "Stoff und Preis",
+          text: "2 m Stoff kosten 18 €. Wie viel kosten 5 m?",
+          relation: "direkt",
+          method: "tabelle",
+          leftLabel: "Länge in m",
+          rightLabel: "Preis in €",
+          givenA: 2,
+          givenB: 18,
+          targetA: 5,
+          answer: 45,
+          unit: "€"
+        },
+        {
+          title: "Tanken",
+          text: "6 l Benzin kosten 9 €. Wie viel kosten 10 l?",
+          relation: "direkt",
+          method: "tabelle",
+          leftLabel: "Menge in l",
+          rightLabel: "Preis in €",
+          givenA: 6,
+          givenB: 9,
+          targetA: 10,
+          answer: 15,
+          unit: "€"
+        },
+        {
+          title: "Gummibärchen",
+          text: "5 Päckchen kosten 15 €. Wie viel kosten 9 Päckchen?",
+          relation: "direkt",
+          method: "tabelle",
+          leftLabel: "Anzahl der Päckchen",
+          rightLabel: "Preis in €",
+          givenA: 5,
+          givenB: 15,
+          targetA: 9,
+          answer: 27,
+          unit: "€"
+        },
+        {
+          title: "Wasserflaschen",
+          text: "8 Flaschen kosten 24 €. Wie viel kosten 3 Flaschen?",
+          relation: "direkt",
+          method: "tabelle",
+          leftLabel: "Anzahl der Flaschen",
+          rightLabel: "Preis in €",
+          givenA: 8,
+          givenB: 24,
+          targetA: 3,
+          answer: 9,
+          unit: "€"
+        }
+      ],
+      direktGleichung: [
+        {
+          title: "Strecke und Zeit",
+          text: "Für 120 km braucht ein Zug 2 Stunden. Wie weit fährt er in 5 Stunden?",
+          relation: "direkt",
+          method: "gleichung",
+          leftLabel: "Strecke in km",
+          rightLabel: "Zeit in h",
+          givenA: 120,
+          givenB: 2,
+          targetA: 5,
+          answer: 300,
+          unit: "km"
+        },
+        {
+          title: "Menge und Preis",
+          text: "5 kg Äpfel kosten 15 €. Wie viel kosten 9 kg?",
+          relation: "direkt",
+          method: "gleichung",
+          leftLabel: "Menge in kg",
+          rightLabel: "Preis in €",
+          givenA: 5,
+          givenB: 15,
+          targetA: 9,
+          answer: 27,
+          unit: "€"
+        },
+        {
+          title: "Kekspackungen",
+          text: "4 Packungen Kekse kosten 10 €. Wie viel kosten 14 Packungen?",
+          relation: "direkt",
+          method: "gleichung",
+          leftLabel: "Anzahl der Packungen",
+          rightLabel: "Preis in €",
+          givenA: 4,
+          givenB: 10,
+          targetA: 14,
+          answer: 35,
+          unit: "€"
+        },
+        {
+          title: "Saftflaschen",
+          text: "3 Flaschen Saft enthalten 4,5 l. Wie viel Liter sind in 8 Flaschen?",
+          relation: "direkt",
+          method: "gleichung",
+          leftLabel: "Anzahl der Flaschen",
+          rightLabel: "Menge in l",
+          givenA: 3,
+          givenB: 4.5,
+          targetA: 8,
+          answer: 12,
+          unit: "l"
+        },
+        {
+          title: "Blumensträuße",
+          text: "2 Blumensträuße kosten 14 €. Wie viel kosten 11 Sträuße?",
+          relation: "direkt",
+          method: "gleichung",
+          leftLabel: "Anzahl der Sträuße",
+          rightLabel: "Preis in €",
+          givenA: 2,
+          givenB: 14,
+          targetA: 11,
+          answer: 77,
+          unit: "€"
+        },
+        {
+          title: "Seiten und Lesezeit",
+          text: "20 Seiten liest Lea in 30 Minuten. Wie viele Seiten liest sie in 75 Minuten?",
+          relation: "direkt",
+          method: "gleichung",
+          leftLabel: "Seiten",
+          rightLabel: "Zeit in min",
+          givenA: 20,
+          givenB: 30,
+          targetA: 75,
+          answer: 50,
+          unit: "Seiten"
+        }
+      ],
+      indirektTabelle: [
+        {
+          title: "Arbeitskräfte und Arbeitszeit",
+          text: "6 Arbeitskräfte brauchen 2 Stunden. Wie lange brauchen 4 Arbeitskräfte?",
+          relation: "indirekt",
+          method: "tabelle",
+          leftLabel: "Anzahl der Arbeitskräfte",
+          rightLabel: "Arbeitszeit in h",
+          givenA: 6,
+          givenB: 2,
+          targetA: 4,
+          answer: 3,
+          unit: "h"
+        },
+        {
+          title: "Maschinen und Tage",
+          text: "8 Maschinen brauchen für einen Auftrag 15 Tage. Wie viele Tage brauchen 10 Maschinen?",
+          relation: "indirekt",
+          method: "tabelle",
+          leftLabel: "Anzahl der Maschinen",
+          rightLabel: "Zeit in d",
+          givenA: 8,
+          givenB: 15,
+          targetA: 10,
+          answer: 12,
+          unit: "d"
+        },
+        {
+          title: "Bauarbeiter",
+          text: "12 Bauarbeiter schaffen eine Arbeit in 18 Tagen. Wie viele Tage brauchen 9 Bauarbeiter?",
+          relation: "indirekt",
+          method: "tabelle",
+          leftLabel: "Anzahl der Bauarbeiter",
+          rightLabel: "Zeit in d",
+          givenA: 12,
+          givenB: 18,
+          targetA: 9,
+          answer: 24,
+          unit: "d"
+        },
+        {
+          title: "Drucker",
+          text: "4 gleiche Drucker drucken einen Auftrag in 9 Stunden. Wie lange brauchen 6 Drucker?",
+          relation: "indirekt",
+          method: "tabelle",
+          leftLabel: "Anzahl der Drucker",
+          rightLabel: "Zeit in h",
+          givenA: 4,
+          givenB: 9,
+          targetA: 6,
+          answer: 6,
+          unit: "h"
+        },
+        {
+          title: "Pumpen",
+          text: "3 Pumpen entleeren ein Becken in 16 Stunden. Wie lange brauchen 8 Pumpen?",
+          relation: "indirekt",
+          method: "tabelle",
+          leftLabel: "Anzahl der Pumpen",
+          rightLabel: "Zeit in h",
+          givenA: 3,
+          givenB: 16,
+          targetA: 8,
+          answer: 6,
+          unit: "h"
+        },
+        {
+          title: "Schülergruppen",
+          text: "5 gleich große Gruppen brauchen 12 Minuten zum Aufräumen. Wie lange brauchen 10 Gruppen?",
+          relation: "indirekt",
+          method: "tabelle",
+          leftLabel: "Anzahl der Gruppen",
+          rightLabel: "Zeit in min",
+          givenA: 5,
+          givenB: 12,
+          targetA: 10,
+          answer: 6,
+          unit: "min"
+        }
+      ],
+      indirektGleichung: [
+        {
+          title: "Ölvorrat",
+          text: "6 l reichen für 70 Tage. Wie viele Tage reichen 5 l?",
+          relation: "indirekt",
+          method: "gleichung",
+          leftLabel: "Verbrauch in l",
+          rightLabel: "Zeit in d",
+          givenA: 6,
+          givenB: 70,
+          targetA: 5,
+          answer: 84,
+          unit: "d"
+        },
+        {
+          title: "Wasserverbrauch",
+          text: "8 l Wasser reichen für 24 Tage. Wie viele Tage reichen 6 l?",
+          relation: "indirekt",
+          method: "gleichung",
+          leftLabel: "Verbrauch in l",
+          rightLabel: "Zeit in d",
+          givenA: 8,
+          givenB: 24,
+          targetA: 6,
+          answer: 32,
+          unit: "d"
+        },
+        {
+          title: "Arbeiter und Stunden",
+          text: "9 Arbeiter brauchen 20 Stunden. Wie viele Stunden brauchen 12 Arbeiter?",
+          relation: "indirekt",
+          method: "gleichung",
+          leftLabel: "Anzahl der Arbeiter",
+          rightLabel: "Zeit in h",
+          givenA: 9,
+          givenB: 20,
+          targetA: 12,
+          answer: 15,
+          unit: "h"
+        },
+        {
+          title: "Fahrradverleih",
+          text: "4 Fahrräder werden auf 18 Kinder verteilt. Wie viele Kinder entfallen auf 6 Fahrräder?",
+          relation: "direkt",
+          method: "gleichung",
+          leftLabel: "Anzahl der Fahrräder",
+          rightLabel: "Kinder",
+          givenA: 4,
+          givenB: 18,
+          targetA: 6,
+          answer: 27,
+          unit: "Kinder"
+        },
+        {
+          title: "Tiere und Futter",
+          text: "12 kg Futter reichen für 8 Tage. Wie viele Tage reichen 6 kg?",
+          relation: "indirekt",
+          method: "gleichung",
+          leftLabel: "Futter in kg",
+          rightLabel: "Zeit in d",
+          givenA: 12,
+          givenB: 8,
+          targetA: 6,
+          answer: 16,
+          unit: "d"
+        },
+        {
+          title: "Reinigungswagen",
+          text: "7 Wagen reinigen eine Halle in 6 Stunden. Wie lange brauchen 3 Wagen?",
+          relation: "indirekt",
+          method: "gleichung",
+          leftLabel: "Anzahl der Wagen",
+          rightLabel: "Zeit in h",
+          givenA: 7,
+          givenB: 6,
+          targetA: 3,
+          answer: 14,
+          unit: "h"
+        }
+      ]
+    };
 
+    const categories = ["direktTabelle", "direktGleichung", "indirektTabelle", "indirektGleichung"];
+    let categoryIndex = 0;
     let currentTask = null;
     let solvedCount = 0;
     let seenCount = 0;
-    let selectedType = null;
 
     const taskCounter = document.getElementById("taskCounter");
     const taskTitle = document.getElementById("taskTitle");
@@ -416,14 +646,35 @@
     const scorePill = document.getElementById("scorePill");
     const seenPill = document.getElementById("seenPill");
 
-    function shufflePick(arr) {
-      return arr[Math.floor(Math.random() * arr.length)];
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    let categoryPools = {
+      direktTabelle: shuffle(tasks.direktTabelle),
+      direktGleichung: shuffle(tasks.direktGleichung),
+      indirektTabelle: shuffle(tasks.indirektTabelle),
+      indirektGleichung: shuffle(tasks.indirektGleichung)
+    };
+
+    function getNextTask() {
+      const category = categories[categoryIndex];
+      if (categoryPools[category].length === 0) {
+        categoryPools[category] = shuffle(tasks[category]);
+      }
+      const task = categoryPools[category].pop();
+      categoryIndex = (categoryIndex + 1) % categories.length;
+      return task;
     }
 
     function resetChoiceStyles() {
-      [btnDirekt, btnIndirekt].forEach(btn => {
-        btn.className = "choice";
-      });
+      btnDirekt.className = "choice";
+      btnIndirekt.className = "choice";
     }
 
     function updateStats() {
@@ -431,16 +682,20 @@
       seenPill.textContent = `Bearbeitet: ${seenCount}`;
     }
 
-    function newTask() {
-      currentTask = shufflePick(tasks);
-      seenCount++;
-      selectedType = null;
+    function formatNumber(n) {
+      return Number.isInteger(n) ? String(n) : String(n).replace(".", ",");
+    }
 
+    function newTask() {
+      currentTask = getNextTask();
+      seenCount++;
       taskCounter.textContent = `Aufgabe ${seenCount}`;
       taskTitle.textContent = currentTask.title;
       taskText.textContent = currentTask.text;
       typeFeedback.textContent = "";
+      typeFeedback.className = "feedback";
       solutionFeedback.textContent = "";
+      solutionFeedback.className = "feedback";
       methodArea.classList.add("hidden");
       solutionBox.classList.add("hidden");
       solutionBox.innerHTML = "";
@@ -451,7 +706,6 @@
     }
 
     function checkType(choice) {
-      selectedType = choice;
       resetChoiceStyles();
       const correct = currentTask.relation;
       const chosenBtn = choice === "direkt" ? btnDirekt : btnIndirekt;
@@ -459,17 +713,16 @@
 
       if (choice === correct) {
         chosenBtn.classList.add("correct");
-        otherBtn.classList.add(correct === "direkt" ? "wrong" : "wrong");
+        otherBtn.classList.add("wrong");
         typeFeedback.textContent = "Richtig. Jetzt löse die Aufgabe mit der vorgegebenen Methode.";
         typeFeedback.className = "feedback good";
-        showMethod();
       } else {
         chosenBtn.classList.add("wrong");
         otherBtn.classList.add("correct");
         typeFeedback.textContent = `Falsch. Es ist ${correct}.`;
         typeFeedback.className = "feedback bad";
-        showMethod();
       }
+      showMethod();
     }
 
     function showMethod() {
@@ -480,11 +733,11 @@
 
       if (currentTask.method === "tabelle") {
         methodTitle.textContent = "Schlussrechnungstabelle";
-        methodInfo.textContent = "Die Tabelle ist schon vorgegeben. Trage die fehlenden Werte ein.";
+        methodInfo.textContent = "Alle Zahlenfelder sind frei. Trage zuerst die gegebenen Werte und dann die fehlenden Werte ein.";
         renderTableMethod();
       } else {
         methodTitle.textContent = "Kurztabelle und Verhältnisgleichung";
-        methodInfo.textContent = "Fülle die kurze Tabelle aus und stelle dann die Verhältnisgleichung auf.";
+        methodInfo.textContent = "Trage die Tabelle vollständig ein und gib danach die Verhältnisgleichung sowie das Ergebnis an.";
         renderEquationMethod();
       }
     }
@@ -497,16 +750,16 @@
             <th>${currentTask.rightLabel}</th>
           </tr>
           <tr>
-            <td>${currentTask.givenA}</td>
-            <td>${currentTask.givenB}</td>
+            <td><input class="input small-input" id="t_a1" type="number" inputmode="decimal"></td>
+            <td><input class="input small-input" id="t_b1" type="number" inputmode="decimal"></td>
           </tr>
           <tr>
-            <td>1</td>
-            <td><input class="input small-input" id="stepToOne" type="number" inputmode="decimal"></td>
+            <td><input class="input small-input" id="t_a2" type="number" inputmode="decimal"></td>
+            <td><input class="input small-input" id="t_b2" type="number" inputmode="decimal"></td>
           </tr>
           <tr>
-            <td>${currentTask.targetA}</td>
-            <td><input class="input small-input" id="finalAnswer" type="number" inputmode="decimal"></td>
+            <td><input class="input small-input" id="t_a3" type="number" inputmode="decimal"></td>
+            <td><input class="input small-input" id="t_b3" type="number" inputmode="decimal"></td>
           </tr>
         </table>
       `;
@@ -521,37 +774,31 @@
             <th>${currentTask.rightLabel}</th>
           </tr>
           <tr>
-            <td>${currentTask.givenA}</td>
-            <td>${currentTask.givenB}</td>
+            <td><input class="input small-input" id="g_a1" type="number" inputmode="decimal"></td>
+            <td><input class="input small-input" id="g_b1" type="number" inputmode="decimal"></td>
           </tr>
           <tr>
-            <td>${currentTask.targetA}</td>
-            <td>x</td>
+            <td><input class="input small-input" id="g_a2" type="number" inputmode="decimal"></td>
+            <td><input class="input small-input" id="g_b2" type="text"></td>
           </tr>
         </table>
       `;
 
-      const relationText = currentTask.relation === "direkt"
-        ? `${currentTask.givenA} : ${currentTask.targetA} = ${currentTask.givenB} : x`
-        : `${currentTask.givenA} · ${currentTask.givenB} = ${currentTask.targetA} · x`;
-
       equationArea.innerHTML = `
         <div class="step">
           <label for="equationInput"><strong>Verhältnisgleichung:</strong></label>
-          <input class="input" id="equationInput" type="text" placeholder="z. B. 3 : 8 = 6 : x">
-          <p class="small">Gib die Gleichung in passender Form ein.</p>
+          <input class="input" id="equationInput" type="text" placeholder="z. B. 3 : 8 = 6 : x oder 6 · 70 = 5 · x">
+          <p class="small">Schreibe die passende Gleichung auf.</p>
         </div>
         <div class="step">
           <label for="finalAnswer"><strong>Ergebnis für x:</strong></label>
           <input class="input" id="finalAnswer" type="number" inputmode="decimal" placeholder="x = ?">
         </div>
       `;
-
-      equationArea.dataset.expected = relationText;
     }
 
     function nearlyEqual(a, b) {
-      return Math.abs(Number(a) - Number(b)) < 0.0001;
+      return Math.abs(Number(String(a).replace(",", ".")) - Number(String(b).replace(",", "."))) < 0.01;
     }
 
     function normalizeEquation(text) {
@@ -568,42 +815,60 @@
       solutionBox.innerHTML = "";
 
       if (currentTask.method === "tabelle") {
-        const stepToOne = document.getElementById("stepToOne").value;
-        const finalAnswer = document.getElementById("finalAnswer").value;
+        const a1 = document.getElementById("t_a1").value;
+        const b1 = document.getElementById("t_b1").value;
+        const a2 = document.getElementById("t_a2").value;
+        const b2 = document.getElementById("t_b2").value;
+        const a3 = document.getElementById("t_a3").value;
+        const b3 = document.getElementById("t_b3").value;
 
-        const correctToOne = currentTask.relation === "direkt"
+        const correctB2 = currentTask.relation === "direkt"
           ? currentTask.givenB / currentTask.givenA
           : currentTask.givenA * currentTask.givenB;
 
-        const ok1 = nearlyEqual(stepToOne, correctToOne);
-        const ok2 = nearlyEqual(finalAnswer, currentTask.answer);
+        const ok = nearlyEqual(a1, currentTask.givenA)
+          && nearlyEqual(b1, currentTask.givenB)
+          && nearlyEqual(a2, 1)
+          && nearlyEqual(b2, correctB2)
+          && nearlyEqual(a3, currentTask.targetA)
+          && nearlyEqual(b3, currentTask.answer);
 
-        if (ok1 && ok2) {
+        if (ok) {
           solutionFeedback.textContent = "Richtig gelöst.";
           solutionFeedback.className = "feedback good";
           solvedCount++;
           updateStats();
         } else {
-          solutionFeedback.textContent = "Noch nicht richtig. Kontrolliere den Zwischenschritt und das Ergebnis.";
+          solutionFeedback.textContent = "Noch nicht richtig. Kontrolliere die eingetragenen Tabellenwerte.";
           solutionFeedback.className = "feedback bad";
         }
       } else {
+        const a1 = document.getElementById("g_a1").value;
+        const b1 = document.getElementById("g_b1").value;
+        const a2 = document.getElementById("g_a2").value;
+        const b2 = document.getElementById("g_b2").value.trim().toLowerCase();
         const equationInput = document.getElementById("equationInput").value;
         const finalAnswer = document.getElementById("finalAnswer").value;
-        const expected = equationArea.dataset.expected;
+
+        const valuesOk = nearlyEqual(a1, currentTask.givenA)
+          && nearlyEqual(b1, currentTask.givenB)
+          && nearlyEqual(a2, currentTask.targetA)
+          && (b2 === "x");
+
+        const expected = currentTask.relation === "direkt"
+          ? `${formatNumber(currentTask.givenA)} : ${formatNumber(currentTask.targetA)} = ${formatNumber(currentTask.givenB)} : x`
+          : `${formatNumber(currentTask.givenA)} · ${formatNumber(currentTask.givenB)} = ${formatNumber(currentTask.targetA)} · x`;
+
         const eqOk = normalizeEquation(equationInput) === normalizeEquation(expected);
         const ansOk = nearlyEqual(finalAnswer, currentTask.answer);
 
-        if (eqOk && ansOk) {
+        if (valuesOk && eqOk && ansOk) {
           solutionFeedback.textContent = "Richtig gelöst.";
           solutionFeedback.className = "feedback good";
           solvedCount++;
           updateStats();
-        } else if (!eqOk && ansOk) {
-          solutionFeedback.textContent = "Das Ergebnis stimmt, aber die Verhältnisgleichung noch nicht ganz.";
-          solutionFeedback.className = "feedback bad";
         } else {
-          solutionFeedback.textContent = "Noch nicht richtig. Prüfe Gleichung und Ergebnis.";
+          solutionFeedback.textContent = "Noch nicht richtig. Prüfe Tabelle, Gleichung und Ergebnis.";
           solutionFeedback.className = "feedback bad";
         }
       }
@@ -617,31 +882,25 @@
           ? currentTask.givenB / currentTask.givenA
           : currentTask.givenA * currentTask.givenB;
 
-        const relationHint = currentTask.relation === "direkt"
-          ? "Direkte Zuordnung: zuerst auf 1, dann auf den gesuchten Wert."
-          : "Indirekte Zuordnung: zuerst auf 1 umrechnen, dabei wird multipliziert. Dann zurück auf den gesuchten Wert durch Teilen.";
-
         solutionBox.innerHTML = `
-          <strong>Lösung:</strong><br>
-          ${relationHint}<br><br>
-          ${currentTask.givenA} → 1: ${currentTask.rightLabel} = ${toOne}<br>
-          1 → ${currentTask.targetA}: ${currentTask.rightLabel} = ${currentTask.answer}<br><br>
-          <strong>Ergebnis: ${currentTask.answer} ${currentTask.unit}</strong>
+          <strong>Lösung:</strong><br><br>
+          1. Zeile: ${formatNumber(currentTask.givenA)} | ${formatNumber(currentTask.givenB)}<br>
+          2. Zeile: 1 | ${formatNumber(toOne)}<br>
+          3. Zeile: ${formatNumber(currentTask.targetA)} | ${formatNumber(currentTask.answer)}<br><br>
+          <strong>Ergebnis: ${formatNumber(currentTask.answer)} ${currentTask.unit}</strong>
         `;
       } else {
         const eq = currentTask.relation === "direkt"
-          ? `${currentTask.givenA} : ${currentTask.targetA} = ${currentTask.givenB} : x`
-          : `${currentTask.givenA} · ${currentTask.givenB} = ${currentTask.targetA} · x`;
-
-        const solve = currentTask.relation === "direkt"
-          ? `${currentTask.givenA} · x = ${currentTask.targetA} · ${currentTask.givenB}`
-          : `x = (${currentTask.givenA} · ${currentTask.givenB}) : ${currentTask.targetA}`;
+          ? `${formatNumber(currentTask.givenA)} : ${formatNumber(currentTask.targetA)} = ${formatNumber(currentTask.givenB)} : x`
+          : `${formatNumber(currentTask.givenA)} · ${formatNumber(currentTask.givenB)} = ${formatNumber(currentTask.targetA)} · x`;
 
         solutionBox.innerHTML = `
-          <strong>Lösung:</strong><br>
+          <strong>Lösung:</strong><br><br>
+          Tabelle:<br>
+          ${formatNumber(currentTask.givenA)} | ${formatNumber(currentTask.givenB)}<br>
+          ${formatNumber(currentTask.targetA)} | x<br><br>
           Verhältnisgleichung: ${eq}<br>
-          Umformen: ${solve}<br>
-          <strong>Ergebnis: x = ${currentTask.answer} ${currentTask.unit}</strong>
+          <strong>Ergebnis: x = ${formatNumber(currentTask.answer)} ${currentTask.unit}</strong>
         `;
       }
     }
